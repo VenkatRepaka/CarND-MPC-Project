@@ -104,8 +104,6 @@ int main() {
           */
 
           // Transfor map coordinates to car coordinates
-          double* ptrx = &ptsx[0];
-          double* ptry = &ptsx[0];
           Eigen::VectorXd car_x(ptsx.size());
           Eigen::VectorXd car_y(ptsy.size());
           double x_diff, y_diff, x_car, y_car;
@@ -134,12 +132,17 @@ int main() {
 
           // Handle Latency using Global Kinematic Model
           const double dt = 0.1;
-          
-          px += v * cos(psi) * dt;
-          py += v * sin(psi) * dt;
-          psi -= v * delta * dt / 2.67;
+          const double Lf = 2.67;
+          // psi = 0;
+          // cos(0) is 1
+          // px = v * cos(psi) * dt;
+          px = v * dt;
+          // sin(0) = 0
+          // py = v * sin(psi) * dt;
+          py = 0;
+          psi = -1 * v * delta * dt / Lf;
           v += a * dt;
-          cte += py;
+          cte = 0;
           epsi -= psi;
           
 
@@ -164,7 +167,7 @@ int main() {
           json msgJson;
           // NOTE: Remember to divide by deg2rad(25) before you send the steering value back.
           // Otherwise the values will be in between [-deg2rad(25), deg2rad(25] instead of [-1, 1].
-          msgJson["steering_angle"] = steer_value/(deg2rad(25));
+          msgJson["steering_angle"] = steer_value/(deg2rad(25)*Lf);
           msgJson["throttle"] = throttle_value;
 
           //Display the MPC predicted trajectory 
