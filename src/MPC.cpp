@@ -56,6 +56,7 @@ class FG_eval {
     // Any additions to the cost should be added to `fg[0]`.
     fg[0] = 0;
 
+    // Multiplication is added as from the lecture tuning MPC
     // The part of the cost based on the reference state.
     for (int t = 0; t < N; t++) {
       fg[0] += 4 * 2000 * CppAD::pow(vars[cte_start + t], 2);
@@ -129,12 +130,22 @@ class FG_eval {
       // epsi[t+1] = psi[t] - psides[t] + v[t] * delta[t] / Lf * dt
       fg[1 + x_start + t] = x1 - (x0 + v0 * CppAD::cos(psi0) * dt);
       fg[1 + y_start + t] = y1 - (y0 + v0 * CppAD::sin(psi0) * dt);
-      fg[1 + psi_start + t] = psi1 - (psi0 + v0 * delta0 / Lf * dt);
+
+      /* ψ Updates from Tips & tricks. We have to multiply with -1 where ever we use delta.
+      This is to work with the simulator. 
+      δ is positive we rotate counter-clockwise, or turn left. In the simulator however, a positive value implies a right turn and a negative value implies a left turn.
+      Two possible ways to get around this are: 
+        1. ψ t+1 =ψ t − (vt/L) * δt * dt
+        2. Multiply the steering value by -1 before sending it back to the server.
+      */
+      // fg[1 + psi_start + t] = psi1 - (psi0 + v0 * delta0 / Lf * dt); 
+      // Changed as per above comment
+      fg[1 + psi_start + t] = psi1 - (psi0 - v0 * delta0 / Lf * dt); 
       fg[1 + v_start + t] = v1 - (v0 + a0 * dt);
-      fg[1 + cte_start + t] =
-          cte1 - ((f0 - y0) + (v0 * CppAD::sin(epsi0) * dt));
-      fg[1 + epsi_start + t] =
-          epsi1 - ((psi0 - psides0) + v0 * delta0 / Lf * dt);
+      fg[1 + cte_start + t] = cte1 - ((f0 - y0) + (v0 * CppAD::sin(epsi0) * dt));
+      // Chnaged as per the above comment
+      // fg[1 + epsi_start + t] = epsi1 - ((psi0 - psides0) - v0 * delta0 / Lf * dt);
+      fg[1 + epsi_start + t] = epsi1 - ((psi0 - psides0) - v0 * delta0 / Lf * dt);
     }
   }
 };
@@ -281,6 +292,7 @@ vector<double> MPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs) {
   result.push_back(solution.x[delta_start]);
   result.push_back(solution.x[a_start]);
 
+  // All optimized x and y values that minimize the cost function
   for (size_t i = 0; i < N - 1; i++) {
     result.push_back(solution.x[x_start + i + 1]);
     result.push_back(solution.x[y_start + i + 1]);

@@ -93,6 +93,8 @@ int main() {
           double py = j[1]["y"];
           double psi = j[1]["psi"];
           double v = j[1]["speed"];
+          double delta = j[1]["steering_angle"];
+          double a = j[1]["throttle"];
 
           /*
           * TODO: Calculate steering angle and throttle using MPC.
@@ -117,24 +119,29 @@ int main() {
             car_y[i] = y_car;
           }
 
+          // Generate coeddicients for 3 degree polynomial for all the coordinates;
           auto coeffs = polyfit(car_x, car_y, 3);
+
+          // Cross Track Error
+          // cte = polyeval(coeffs, x) - y;
+          // Since we measure from car position both x and y are 0.
+          // It comes to below equation
           double cte = polyeval(coeffs, 0);
+          // Orientation Error
+          // double epsi = psi - atan(coeffs[1]);
+          // psi is 0
           double epsi = -atan(coeffs[1]);
 
-          // account for 100 ms latency
-          double dt = 0.1;
+          // Handle Latency using Global Kinematic Model
+          const double dt = 0.1;
+          
           px += v * cos(psi) * dt;
           py += v * sin(psi) * dt;
-
-          // this was suggested by project reviewer
-          // but it was breaking things during the sharp corner
-          //px += v * cos(-delta) * dt;
-          //py += v * sin(-delta) * dt;
-
-          /* psi -= v * delta / Lf * dt;
-          cte += v * sin(epsi) * dt;
-          epsi -= v * delta / Lf * dt;
-          v += a * dt; // XXX: update v at the end */
+          psi -= v * delta * dt / 2.67;
+          v += a * dt;
+          cte += py;
+          epsi -= psi;
+          
 
           Eigen::VectorXd state(6);
           state << px, py, psi, v, cte, epsi;
@@ -181,6 +188,14 @@ int main() {
 
           //.. add (x,y) points to list here, points are in reference to the vehicle's coordinate system
           // the points in the simulator are connected by a Yellow line
+          // Display points ahead of car by a factor ahead_factor
+          double ahead_factor = 3;
+          int num_points = 25;
+          for ( int i = 0; i < num_points; i++ ) {
+            double x = ahead_factor * i;
+            next_x_vals.push_back( x );
+            next_y_vals.push_back( polyeval(coeffs, x) );
+          }
 
           msgJson["next_x"] = next_x_vals;
           msgJson["next_y"] = next_y_vals;
