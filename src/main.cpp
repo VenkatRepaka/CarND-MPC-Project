@@ -193,7 +193,7 @@ int main() {
           // the points in the simulator are connected by a Yellow line
           // Display points ahead of car by a factor ahead_factor
           double ahead_factor = 3;
-          int num_points = 25;
+          int num_points = 20;
           for ( int i = 0; i < num_points; i++ ) {
             double x = ahead_factor * i;
             next_x_vals.push_back( x );
