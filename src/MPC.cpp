@@ -25,7 +25,7 @@ const double Lf = 2.67;
 
 // Both the reference cross track and orientation errors are 0.
 // The reference velocity is set to 40 mph.
-double ref_v = 40;
+double ref_v = 150;
 
 // The solver takes all the state variables and actuator
 // variables in a singular vector. Thus, we should to establish
@@ -58,22 +58,53 @@ class FG_eval {
 
     // Multiplication is added as from the lecture tuning MPC
     // The part of the cost based on the reference state.
-    for (int t = 0; t < N; t++) {
-      fg[0] += 4 * 2000 * CppAD::pow(vars[cte_start + t], 2);
-      fg[0] += 4 * 2000 * CppAD::pow(vars[epsi_start + t], 2);
-      fg[0] += CppAD::pow(vars[v_start + t] - ref_v, 2);
+
+    for( int i = 0; i < N; i++ ) {
+      fg[0] += 1000*CppAD::pow(vars[cte_start + i], 2);
+      fg[0] += 1000*CppAD::pow(vars[epsi_start + i], 2);
+      fg[0] += CppAD::pow(vars[v_start + i] - ref_v, 2);
     }
 
+    
     // Minimize the use of actuators.
-    for (int t = 0; t < N - 1; t++) {
-      fg[0] += 5 * CppAD::pow(vars[delta_start + t], 2);
-      fg[0] += 5 * CppAD::pow(vars[a_start + t], 2);
+    for (int i = 0; i< N - 1; i++) {
+      fg[0] += 50 * CppAD::pow(vars[delta_start + i], 2);
+      fg[0] += 50 * CppAD::pow(vars[a_start + i], 2);
+      // including error for speed and angle
+      // Very good at higher reference speeds but slowing more than required at low speeds. Unable to gain max speed.
+      // But when used at lower ref speeds this lowered the speed at turning more than required.
+      // This helped most at high speeds. Slowed at turnings which helped avoid car over turns
+      // if(CppAD::GreaterThanZero(CppAD::abs(vars[delta_start + i]) - 0.15)) {
+        if(ref_v > 50) {
+          fg[0] += 200 * CppAD::pow(vars[delta_start + i] * vars[v_start+i], 2);
+        }
+        else if(ref_v > 100) {
+          fg[0] += 500 * CppAD::pow(vars[delta_start + i] * vars[v_start+i], 2);
+        }
+        else if(ref_v > 150) {
+          fg[0] += 800 * CppAD::pow(vars[delta_start + i] * vars[v_start+i], 2);
+        }
+      // }
     }
 
     // Minimize the value gap between sequential actuations.
-    for (int t = 0; t < N - 2; t++) {
-      fg[0] += 200 * CppAD::pow(vars[delta_start + t + 1] - vars[delta_start + t], 2);
-      fg[0] += 10 * CppAD::pow(vars[a_start + t + 1] - vars[a_start + t], 2);
+    // (how smooth the actuations are)
+    for (int i = 0; i < N - 2; i++) {
+      if(ref_v < 100) {
+        fg[0] += 25000 * CppAD::pow(vars[delta_start + i + 1] - vars[delta_start + i], 2);
+      }
+      else if(ref_v < 150) {
+        fg[0] += 100000 * CppAD::pow(vars[delta_start + i + 1] - vars[delta_start + i], 2);
+      }
+      else {
+        fg[0] += 250000 * CppAD::pow(vars[delta_start + i + 1] - vars[delta_start + i], 2);
+      }
+      if(ref_v < 150) {
+        fg[0] += 5000 * CppAD::pow(vars[a_start + i + 1] - vars[a_start + i], 2);
+      }
+      else {
+        fg[0] += 100000 * CppAD::pow(vars[a_start + i + 1] - vars[a_start + i], 2);
+      }
     }
 
     //
