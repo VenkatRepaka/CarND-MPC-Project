@@ -73,7 +73,7 @@ class FG_eval {
       // including error for speed and angle
       // Very good at higher reference speeds but slowing more than required at low speeds. Unable to gain max speed.
       // But when used at lower ref speeds this lowered the speed at turning more than required.
-      // This helped most at high speeds. Slowed at turnings which helped avoid car over turns
+      // This helped most at high speeds. Slowed at turnings which helped avoid car over turns/off road experiences
       // if(CppAD::GreaterThanZero(CppAD::abs(vars[delta_start + i]) - 0.15)) {
         if(ref_v > 50) {
           fg[0] += 200 * CppAD::pow(vars[delta_start + i] * vars[v_start+i], 2);
