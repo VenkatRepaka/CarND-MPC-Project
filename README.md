@@ -49,7 +49,12 @@ Actuators are limited by design and fundamental physics. Below are the upper and
 _N_ is the number of timesteps in the horizon. _dt_ is how much time elapses between actuations. The values chosen for _N_ is 10 and for _dt_ is 0.1
 
 ## Solution
-
+1. Fitting polynomial
+sdljsf
+sd;l;ks;
+sdlsdl
+2. Calculate CTE and Orientation error
+3. Tuning
 
 
 ## Dependencies
