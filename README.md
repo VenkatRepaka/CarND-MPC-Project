@@ -33,6 +33,13 @@ f(x) is our reference line. It is the position of y given x in the polynomial.
 ![Equations](https://github.com/VenkatRepaka/CarND-MPC-Project/blob/master/notes/orientation_equation_explanation.JPG)</br>
 ψdes can be calculated as tangential angle of the polynomial f evaluated at x.
 
+##### Actuator Constraints
+Actuators are limited by design and fundamental physics. Below are the upper and lower bounds that have been used in the project.
+- The upper and lower bounds for steering angle are 25deg and -25deg.
+- The upper and lower bounds for throttle angle are 1 and -1. 1 means full acceleration and -1 means full brake.
+
+
+# MPC
 
 
 
