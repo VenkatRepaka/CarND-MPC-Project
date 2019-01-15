@@ -40,6 +40,15 @@ Actuators are limited by design and fundamental physics. Below are the upper and
 
 
 # MPC
+### Cost Reduction
+- Minimize error to actual state(cte, epsi and velocity)
+- Minimize the use of actuators.
+- Minimize the value gap between sequential actuations.
+
+### Length and Duration
+_N_ is the number of timesteps in the horizon. _dt_ is how much time elapses between actuations. The values chosen for _N_ is 10 and for _dt_ is 0.1
+
+## Solution
 
 
 
