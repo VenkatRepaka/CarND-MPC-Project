@@ -3,6 +3,33 @@ Self-Driving Car Engineer Nanodegree Program
 
 ---
 
+# Model
+We are using Kinematic Model which ignores forces, gravity and mass. In this model we just keep track of State of the vehicle.
+### Properties in the State
+- X position
+- Y Position
+- Orientation
+- Velocity
+
+The aim of the model is to predict the future state over time given the current state and actuator inputs. The actuator inputs allows to control the vehicle state.
+
+- Accelerator
+- Throttle (Here both acceleration(Positive value) and braking(Negative value))
+
+State: [x,y,ψ,v]
+$$
+x_{t+1}​=x_t​+v_t​cos(ψ_t​) ∗ dt\, 
+\\y_{t+1}​=y_t​ + v_t​sin(ψ_t​) ∗ dt\, 
+\\ψ_{t+1} = ψ_t + \frac{v_t}{L_f} * ​δ * dt\,
+\\v_{t+1} = v_t + a_t * dt\,
+$$
+Actuators: [δ,a]
+$$
+
+$$
+
+
+
 ## Dependencies
 
 * cmake >= 3.5
