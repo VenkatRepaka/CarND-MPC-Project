@@ -17,16 +17,17 @@ The aim of the model is to predict the future state over time given the current 
 - Throttle (Here both acceleration(Positive value) and braking(Negative value))
 
 State: [x,y,ψ,v]
-$$
-x_{t+1}​=x_t​+v_t​cos(ψ_t​) ∗ dt\, 
-\\y_{t+1}​=y_t​ + v_t​sin(ψ_t​) ∗ dt\, 
-\\ψ_{t+1} = ψ_t + \frac{v_t}{L_f} * ​δ * dt\,
-\\v_{t+1} = v_t + a_t * dt\,
-$$
 Actuators: [δ,a]
-$$
+![Equations](https://github.com/VenkatRepaka/CarND-MPC-Project/blob/master/notes/state_equations.JPG)
 
-$$
+
+Now the reference trajectory is derived from a polynomial using 3rd order, since third order polynomials will fit the trajectories for most roads. This is done using Eigen library in C++
+### Minimize Error
+The error between the reference trajectory and the actual trajectory should be minimized.
+This can be done by predicting the vehicle's actual path and then adjusting the control inputs to minimize the difference between that prediction and reference trajectory.
+##### Cross Track Error
+
+##### Orientation Error
 
 
 
