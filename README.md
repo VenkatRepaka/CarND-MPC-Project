@@ -16,7 +16,7 @@ The aim of the model is to predict the future state over time given the current 
 - Accelerator
 - Throttle (Here both acceleration(Positive value) and braking(Negative value))
 
-State: [x,y,ψ,v]
+State: [x,y,ψ,v]</br>
 Actuators: [δ,a]</br>
 ![Equations](https://github.com/VenkatRepaka/CarND-MPC-Project/blob/master/notes/state_equations.JPG)
 
