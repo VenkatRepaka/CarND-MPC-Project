@@ -26,8 +26,10 @@ Now the reference trajectory is derived from a polynomial using 3rd order, since
 The error between the reference trajectory and the actual trajectory should be minimized.
 This can be done by predicting the vehicle's actual path and then adjusting the control inputs to minimize the difference between that prediction and reference trajectory.
 ##### Cross Track Error
-
+![Equations](https://github.com/VenkatRepaka/CarND-MPC-Project/blob/master/notes/cte_equation.JPG)
 ##### Orientation Error
+![Equations](https://github.com/VenkatRepaka/CarND-MPC-Project/blob/master/notes/orientation_equation.JPG)</br>
+![Equations](https://github.com/VenkatRepaka/CarND-MPC-Project/blob/master/notes/orientation_equation_explanation.JPG)
 
 
 
