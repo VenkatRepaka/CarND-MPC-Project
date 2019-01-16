@@ -106,6 +106,25 @@ else {
 }
 ```
 
+We are running the vehicle controls with a latency. dt used is 100 milliseconds. For this the relative state for 100 milliseconds has to be calculated and this is used as the initial state for MPC.
+```
+// Since we measure from car position both x and y are 0.
+const double dt = 0.1;
+const double Lf = 2.67;
+// psi = 0;
+// cos(0) is 1
+// px = v * cos(psi) * dt;
+px = v * dt;
+// sin(0) = 0
+// py = v * sin(psi) * dt;
+py = 0;
+psi = -1 * v * delta * dt / Lf;
+v += a * dt;
+cte = 0;
+epsi -= psi;
+```
+
+
 
 ## Dependencies
 
