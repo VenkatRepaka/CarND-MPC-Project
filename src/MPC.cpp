@@ -25,7 +25,7 @@ const double Lf = 2.67;
 
 // Both the reference cross track and orientation errors are 0.
 // The reference velocity is set to 40 mph.
-const double ref_v = 150;
+const double ref_v = 155;
 
 // The solver takes all the state variables and actuator
 // variables in a singular vector. Thus, we should to establish

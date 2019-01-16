@@ -142,7 +142,11 @@ int main() {
           py = 0;
           psi = -1 * v * delta * dt / Lf;
           v += a * dt;
-          cte = 0;
+
+          /* cte = 0;
+          epsi -= psi; */
+          cte += v*sin(epsi)*dt;
+          // Below equation is same as epsi = epsi + v*delta*dt/Lf;
           epsi -= psi;
           
 
