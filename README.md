@@ -49,12 +49,62 @@ Actuators are limited by design and fundamental physics. Below are the upper and
 _N_ is the number of timesteps in the horizon. _dt_ is how much time elapses between actuations. The values chosen for _N_ is 10 and for _dt_ is 0.1
 
 ## Solution
-1. Fitting polynomial</br>
-sdljsf
-sd;l;ks;
-sdlsdl
-2. Calculate CTE and Orientation error
-3. Tuning
+
+The waypoints have to be transformed into points of vehicle coordinate system.
+```
+Eigen::VectorXd car_x(ptsx.size());
+Eigen::VectorXd car_y(ptsy.size());
+double x_diff, y_diff, x_car, y_car;
+double minus_psi =  -1 * psi;
+for(unsigned  int i=0;i<ptsx.size();i++) {
+	x_diff = ptsx[i] - px;
+	y_diff = ptsy[i] - py;
+	x_car = x_diff *  cos(minus_psi) - y_diff *  sin(minus_psi);
+	y_car = x_diff *  sin(minus_psi) + y_diff *  cos(minus_psi);
+	car_x[i] = x_car;
+	car_y[i] = y_car;
+}
+```
+The cost function parameters were tuned using trial and error method and the final values are 
+```
+fg[0] +=  1000*CppAD::pow(vars[cte_start + i], 2);
+fg[0] +=  1000*CppAD::pow(vars[epsi_start + i], 2);
+fg[0] +=  CppAD::pow(vars[v_start + i] - ref_v, 2);
+
+// Minimize the use of actuators.
+fg[0] += 50  *  CppAD::pow(vars[delta_start + i], 2);
+fg[0] += 50  *  CppAD::pow(vars[a_start + i], 2);
+// including error for speed and angle
+// Very good at higher reference speeds but slowing more than required at low speeds. Unable to gain max speed.
+// But when used at lower ref speeds this lowered the speed at turning more than required.
+// This helped most at high speeds. Slowed at turnings which helped avoid car over turns/off road experiences
+if(ref_v >  50) {
+	fg[0] +=  200  *  CppAD::pow(vars[delta_start + i] * vars[v_start+i], 2);
+}
+else  if(ref_v >  100) {
+	fg[0] +=  500  *  CppAD::pow(vars[delta_start + i] * vars[v_start+i], 2);
+}
+else  if(ref_v >  150) {
+	fg[0] +=  800  *  CppAD::pow(vars[delta_start + i] * vars[v_start+i], 2);
+}
+
+// Minimize the value gap between sequential actuations.
+if(ref_v <  100) {
+	fg[0] +=  25000  *  CppAD::pow(vars[delta_start + i +  1] - vars[delta_start + i], 2);
+}
+else  if(ref_v <  150) {
+	fg[0] +=  100000  *  CppAD::pow(vars[delta_start + i +  1] - vars[delta_start + i], 2);
+}
+else {
+	fg[0] +=  250000  *  CppAD::pow(vars[delta_start + i +  1] - vars[delta_start + i], 2);
+}
+if(ref_v <  150) {
+	fg[0] +=  5000  *  CppAD::pow(vars[a_start + i +  1] - vars[a_start + i], 2);
+}
+else {
+	fg[0] +=  100000  *  CppAD::pow(vars[a_start + i +  1] - vars[a_start + i], 2);
+}
+```
 
 
 ## Dependencies
