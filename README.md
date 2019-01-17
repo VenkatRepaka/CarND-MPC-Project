@@ -46,7 +46,18 @@ Actuators are limited by design and fundamental physics. Below are the upper and
 - Minimize the value gap between sequential actuations.
 
 ### Length and Duration
-_N_ is the number of timesteps in the horizon. _dt_ is how much time elapses between actuations. The values chosen for _N_ is 10 and for _dt_ is 0.1
+_N_ is the number of timesteps in the horizon. _dt_ is how much time elapses between actuations.<br>
+A smaller dt means higher N(Number of steps). This means higher computation with higher accuracy, and this also adds to latency.<br>
+A larger dt means lower N(Number of steps). less frequent actuations, which makes it harder to accurately approximate a continuous reference trajectory. This is sometimes called "discretization error".<br>
+N determines the number of variables optimized by the MPC. This is also the major driver of computational cost.<br>
+So optimal values for dt and N have to be chosen/derived from tuning.<br><br>
+I have started with _N_ as 10 and _dt_ as 0.1(Same as the latency in the system).
+**The best values that I have found are _N_ is 8 and for _dt_ is 0.1 and it worked well for a speed of 81mph.**
+<br><br>
+- For a time horizon of 1 second when dt is low, osillation is high. The cause is too frequent actuations caused unstablility.
+- For a time horizon of 2 seconds with dt 0.1 and time steps 20, oscillation is high. The cause is the curvature that is drawn at the curves is leading to slight shift away from reference trajectory. This in turn is causing to steer away from reference line. And this deviation when combined with speeding, causing car to move off the road.
+
+
 
 ## Solution
 
