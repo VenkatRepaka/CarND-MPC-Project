@@ -8,8 +8,18 @@ using CppAD::AD;
 using namespace std;
 
 // TODO: Set the timestep length and duration
-const size_t N = 10;
+const size_t N = 8;
 double dt = 0.1;
+
+// N = 15 & dt = 0.05 -> Excellent turns. Max speed 71mph
+// N = 20 & dt = 0.05 -> Oscillations. Calculation time is more.
+// N = 15 & dt = 0.075 -> Failed at slant curve after second steep curve
+// N = 10 & dt = 0.075 -> Excellent turns. Max speed 71mph
+// N = 10 & dt = 0.06 -> Excellent turns. Max speed 64mph
+// N = 15 & dt = 0.06 -> Speed upto 75mph but oscillating after 1 lap.
+// N = 15 & dt = 0.08 -> Speed upto 85mph. Failed at slant curve after second steep curve.
+// N = 15 & dt = 0.08 -> Speed upto 80mph. Failed at second lap.
+// N = 8 & dt = 0.1 -> Best. And with ref_v = 170.
 
 // This value assumes the model presented in the classroom is used.
 //
@@ -25,7 +35,7 @@ const double Lf = 2.67;
 
 // Both the reference cross track and orientation errors are 0.
 // The reference velocity is set to 40 mph.
-const double ref_v = 155;
+const double ref_v = 170;
 
 // The solver takes all the state variables and actuator
 // variables in a singular vector. Thus, we should to establish
@@ -198,7 +208,7 @@ vector<double> MPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs) {
   double v = state[3];
   double cte = state[4];
   double epsi = state[5];
-  cout << "initial states" << endl;
+  // cout << "initial states" << endl;
 
   // TODO: Set the number of model variables (includes both states and inputs).
   // For example: If the state is a 4 element vector, the actuators is a 2
@@ -307,7 +317,7 @@ vector<double> MPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs) {
 
   // Cost
   auto cost = solution.obj_value;
-  std::cout << "Cost " << cost << std::endl;
+  // std::cout << "Cost " << cost << std::endl;
 
   // TODO: Return the first actuator values. The variables can be accessed with
   // `solution.x[i]`.
