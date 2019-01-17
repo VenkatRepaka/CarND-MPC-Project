@@ -16,8 +16,8 @@ The aim of the model is to predict the future state over time given the current 
 - Accelerator
 - Throttle (Here both acceleration(Positive value) and braking(Negative value))
 
-State: [x,y,ψ,v]</br>
-Actuators: [δ,a]</br>
+State: [x,y,ψ,v]<br>
+Actuators: [δ,a]<br>
 ![Equations](https://github.com/VenkatRepaka/CarND-MPC-Project/blob/master/notes/state_equations.JPG)
 
 
@@ -26,11 +26,11 @@ Now the reference trajectory is derived from a polynomial using 3rd order, since
 The error between the reference trajectory and the actual trajectory should be minimized.
 This can be done by predicting the vehicle's actual path and then adjusting the control inputs to minimize the difference between that prediction and reference trajectory.
 ##### Cross Track Error
-![Equations](https://github.com/VenkatRepaka/CarND-MPC-Project/blob/master/notes/cte_equation.JPG)</br>
+![Equations](https://github.com/VenkatRepaka/CarND-MPC-Project/blob/master/notes/cte_equation.JPG)<br>
 f(x) is our reference line. It is the position of y given x in the polynomial.
 ##### Orientation Error
-![Equations](https://github.com/VenkatRepaka/CarND-MPC-Project/blob/master/notes/orientation_equation.JPG)</br>
-![Equations](https://github.com/VenkatRepaka/CarND-MPC-Project/blob/master/notes/orientation_equation_explanation.JPG)</br>
+![Equations](https://github.com/VenkatRepaka/CarND-MPC-Project/blob/master/notes/orientation_equation.JPG)<br>
+![Equations](https://github.com/VenkatRepaka/CarND-MPC-Project/blob/master/notes/orientation_equation_explanation.JPG)<br>
 ψdes can be calculated as tangential angle of the polynomial f evaluated at x.
 
 ##### Actuator Constraints
@@ -51,7 +51,7 @@ A smaller dt means higher N(Number of steps). This means higher computation with
 A larger dt means lower N(Number of steps). less frequent actuations, which makes it harder to accurately approximate a continuous reference trajectory. This is sometimes called "discretization error".<br>
 N determines the number of variables optimized by the MPC. This is also the major driver of computational cost.<br>
 So optimal values for dt and N have to be chosen/derived from tuning.<br><br>
-I have started with _N_ as 10 and _dt_ as 0.1(Same as the latency in the system).
+I have started with _N_ as 10 and _dt_ as 0.1(same as the latency in the system).<br>
 **The best values that I have found are _N_ is 8 and for _dt_ is 0.1 and it worked well for a speed of 81mph.**
 <br><br>
 - For a time horizon of 1 second when dt is low, osillation is high. The cause is too frequent actuations caused unstablility.
@@ -131,7 +131,8 @@ px = v * dt;
 py = 0;
 psi = -1 * v * delta * dt / Lf;
 v += a * dt;
-cte = 0;
+cte += v*sin(epsi)*dt;
+// Below equation is same as epsi = epsi + v*delta*dt/Lf;
 epsi -= psi;
 ```
 
